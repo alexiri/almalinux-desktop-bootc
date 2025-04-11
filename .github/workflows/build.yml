@@ -204,7 +204,7 @@ jobs:
           set -x
           mkdir -p output
           OUTPUT_DIRECTORY="$(realpath output)"
-          ISO_NAME="${{ env.IMAGE_NAME }}-${{ matrix.VARIANT }}-${{ env.DEFAULT_TAG }}-${{ matrix.PLATFORM }}.iso"
+          ISO_NAME="${{ env.IMAGE_NAME }}-${{ env.DATE_STAMP }}-${{ matrix.PLATFORM }}.iso"
           sha256sum "${OUTPUT_PATH}" | tee "${OUTPUT_DIRECTORY}/${ISO_NAME}-CHECKSUM"
           mv "${OUTPUT_PATH}" "${OUTPUT_DIRECTORY}/${ISO_NAME}"
           echo "output_directory=$OUTPUT_DIRECTORY" >> "${GITHUB_OUTPUT}"
@@ -212,6 +212,6 @@ jobs:
       - name: Upload to Job Artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: ${{ env.IMAGE_NAME }}-${{ env.DEFAULT_TAG }}-${{ matrix.platform }}-iso
+          name: ${{ env.IMAGE_NAME }}-${{ env.DATE_STAMP }}-${{ matrix.platform }}-iso
           if-no-files-found: error
           path: ${{ steps.rename.outputs.output_directory }}
