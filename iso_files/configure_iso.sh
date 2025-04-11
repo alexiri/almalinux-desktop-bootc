@@ -10,5 +10,4 @@ dnf install -y \
 systemctl disable uupd.timer
 systemctl --global disable podman-auto-update.timer
 systemctl disable rpm-ostree.service
-systemctl disable uupd.timer
 systemctl disable check-sb-key.service
