@@ -194,7 +194,7 @@ jobs:
         uses: ublue-os/titanoboa@anaconda-webui-format
         with:
           image-ref: ${{ env.IMAGE_DEST }}/${{ env.IMAGE_NAME }}:${{ matrix.VERSION_MAJOR }}-${{ env.DATE_STAMP }}-${{ matrix.PLATFORM }}
-          hook-post-rootfs: ${{ github.workspace }}/iso_files/configure_iso.sh
+          hook-post-rootfs: iso_files/configure_iso.sh
 
       - name: Rename ISO
         id: rename
