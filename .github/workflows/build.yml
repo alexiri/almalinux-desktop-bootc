@@ -200,15 +200,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Dump steps context
-        env:
-          CONTEXT: ${{ toJson(steps) }}
-        run: echo "$CONTEXT"
-      - name: Dump needs context
-        env:
-          CONTEXT: ${{ toJson(needs) }}
-        run: echo "$CONTEXT"
-
       - name: Login to registry (docker)
         uses: docker/login-action@v3
         with:
