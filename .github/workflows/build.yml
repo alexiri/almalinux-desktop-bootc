@@ -97,13 +97,29 @@ jobs:
       IMAGE_NAME: "almalinux-${{ matrix.VARIANT }}"
 
     steps:
+    - name: Check update
+      shell: bash
+      run: |
+        # 'dnf check-update'
+        # exit codes:
+        #   0 - no updates
+        #   100 - updates available
+        #   125 - tag/platform not found
+        #   127 - command not found
+        res=0
+        podman run --quiet --rm ${{ env.IMAGE_DEST }}/${{ env.IMAGE_NAME }}:${{ matrix.VERSION_MAJOR }} dnf check-update || res=$?
+        echo "res=${res}" >> "$GITHUB_ENV"
+        echo "Exit code: '$res'"
+
     - uses: actions/checkout@v4
+      if: ${{ env.res != 0 }}
       with:
         submodules: true
 
     - uses: ./.github/actions/shared-steps
       name: Build and Push Container
       id: build_and_push
+      if: ${{ env.res != 0 }}
       with:
         IMAGE_NAME: ${{ env.IMAGE_NAME }}
         VERSION_MAJOR: ${{ matrix.VERSION_MAJOR }}
@@ -117,6 +133,7 @@ jobs:
 
     - name: Build ISO
       id: build
+      if: ${{ env.res != 0 }}
       shell: bash
       env:
         SOURCE_IMAGE_REF: "${{ steps.build_and_push.outputs.IMAGE }}@${{ steps.build_and_push.outputs.DIGEST }}"
@@ -132,6 +149,7 @@ jobs:
 
     - name: Rename ISO
       id: rename
+      if: ${{ env.res != 0 }}
       shell: bash
       env:
         OUTPUT_PATH: ${{ steps.build.outputs.iso-dest }}
@@ -146,6 +164,7 @@ jobs:
 
     - name: Upload ISO to Job Artifacts
       id: upload
+      if: ${{ env.res != 0 }}
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: ${{ env.IMAGE_NAME }}-${{ env.DATE_STAMP }}-${{ matrix.platform }}-iso
@@ -153,6 +172,7 @@ jobs:
         path: ${{ steps.rename.outputs.output_directory }}
 
     - name: Write summary
+      if: ${{ env.res != 0 }}
       id: summary
       shell: bash
       run: |
